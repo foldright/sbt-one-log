@@ -17,22 +17,25 @@ object OneLog extends Plugin {
       "99-empty" at "http://version99.qos.ch/"
     )
 
-    lazy val logs = Seq(
-      "org.slf4j" % "log4j-over-slf4j" % slf4jVersion.value
-      , "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value
-      , "org.slf4j" % "jul-to-slf4j" % slf4jVersion.value
-      , "org.slf4j" % "slf4j-api" % slf4jVersion.value
-      , "ch.qos.logback" % "logback-classic" % logbackVersion.value
-      , "commons-logging" % "commons-logging" % "99-empty"
-      , "commons-logging" % "commons-logging-api" % "99-empty"
-      , "log4j" % "log4j" % "99-empty"
-    )
+    lazy val logs: Def.Initialize[Seq[ModuleID]] = Def.setting {
+      Seq(
+        "org.slf4j" % "log4j-over-slf4j" % slf4jVersion.value
+        , "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value
+        , "org.slf4j" % "jul-to-slf4j" % slf4jVersion.value
+        , "org.slf4j" % "slf4j-api" % slf4jVersion.value
+        , "ch.qos.logback" % "logback-classic" % logbackVersion.value
+        , "ch.qos.logback" % "logback-core" % logbackVersion.value
+        , "commons-logging" % "commons-logging" % "99-empty"
+        , "commons-logging" % "commons-logging-api" % "99-empty"
+        , "log4j" % "log4j" % "99-empty"
+      )
+    }
 
-    val settings = Seq[Setting[_]](
+    val oneLogSettings = Seq[Setting[_]](
       slf4jVersion := "1.7.6"
       , logbackVersion := "1.1.1"
       , resolvers ++= oneLogResolvers
-      , libraryDependencies ++= logs
+      , libraryDependencies ++= logs.value
     )
   }
 
