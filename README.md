@@ -14,15 +14,15 @@ looking at the Log lib below:
 * log4j 2
 * ...
 
-of course, you can keep you project dependency cleanly with one or two log lib (e.g. slf4j and logback)
+of course, you can keep your project dependency cleanly with one or two log lib (e.g. slf4j and logback)
 
-but sometime your other dependency is out of control. 
-e.g. if you dependency with Apache httpclient lob which dependeny with commons-logging, you will log with commons-logging
+but sometimes your other dependency is out of control. 
+e.g. if you dependency with Apache httpclient lib which dependeny with commons-logging, you will log with commons-logging
 
 also, you can add jcl-over-slf4j and exclud commons-logging explicitly in libraryDependencies setting.
 A better way is to explicitly declare dependency commons-logging with the sepcial version 99-empty.
 
-So, sbt-one-log comes to free your hands.
+so, sbt-one-log comes to free your hands.
 
 ## usage 
 tbc...
