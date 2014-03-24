@@ -28,7 +28,7 @@ object OneLog extends Plugin {
       , "log4j" % "log4j" % "99-empty"
     )
 
-    val ongLogSetting = Seq[Setting[_]](
+    val settings = Seq[Setting[_]](
       slf4jVersion := "1.7.6"
       , logbackVersion := "1.1.1"
       , resolvers ++= oneLogResolvers
