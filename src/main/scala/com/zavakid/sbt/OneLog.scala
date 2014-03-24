@@ -6,7 +6,7 @@ import sbt.Keys._
 /**
  * Created by ZavaKid on 2014-03-24
  */
-class OneLog extends Plugin {
+object OneLog extends Plugin {
 
   val slf4jVersion = settingKey[String]("which slf4j version to use")
   val logbackVersion = settingKey[String]("which logback version to use")
