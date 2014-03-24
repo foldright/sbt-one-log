@@ -1,7 +1,9 @@
 package com.zavakid.sbt
+
 import sbt._
 import Keys._
 import sbt.ScriptedPlugin._
+
 
 object OneLogBuild extends Build{
 
@@ -25,7 +27,28 @@ object OneLogBuild extends Build{
     },
     sbtPlugin := true,
     crossPaths := false,
-    scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6")
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6"),
+    pomExtra := {
+      <url>http://www.zavakid.com/sbt-one-log/</url>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+      <scm>
+        <connection>scm:git:github.com:zavakid/sbt-one-log.git</connection>
+        <developerConnection>scm:git:git@github.com:zavakid/sbt-one-log.git</developerConnection>
+        <url>github.com/zavakid/sbt-one-log</url>
+      </scm>
+      <developers>
+        <developer>
+          <id>zava</id>
+          <name>Zavakid</name>
+          <url>http://www.zavakid.com</url>
+        </developer>
+      </developers>
+    }
   )
 
   lazy val oneLog = Project(
