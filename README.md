@@ -1,5 +1,8 @@
-# sbt-one-log
+# sbt-one-log plugin
 sbt-one-log is a sbt plugin make log dependency easy.
+
+## features
+* uniform your log dependency, current support slf4j and logback, other log lib will bridge to slf4j.
 
 ## why sbt-one-log
 Scala can leverage lots of perfect Java lib, but it's chaotic with the Log libs in Java world.
@@ -25,4 +28,42 @@ A better way is to explicitly declare dependency commons-logging with the sepcia
 so, sbt-one-log comes to free your hands.
 
 ## usage 
-tbc...
+Add `sbt-one-log` plugin to the sbt configuration:
+
+### add plugin in project/plugins.sbt
+```scala
+addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1")
+```
+### using build.sbt
+```scala
+import OneLogKeys._
+
+// oneLogSettings will add libDependencies and resolvers
+oneLogSettings
+```
+
+Now sbt-one-log will add the log dependency and override other log lib.
+
+### using project/Build.scala
+```scala
+import sbt._
+import sbt.Keys._
+import OneLogKeys._
+
+object Build extends sbt.Build {
+
+  // add oneLogSettings to your settings
+  lazt val root = Project(
+    id = "example",
+    base = file(.),
+  ).settings(oneLogSettings: _*)
+
+  //... 
+  //other settings
+  //...
+}
+
+
+
+```
+
