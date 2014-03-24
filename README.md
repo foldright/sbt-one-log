@@ -22,7 +22,7 @@ e.g. if you dependency with Apache httpclient lob which dependeny with commons-l
 also, you can add jcl-over-slf4j and exclud commons-logging explicitly in libraryDependencies setting.
 A better way is to explicitly declare dependency commons-logging with the sepcial version 99-empty.
 
-and sbt-one-log comes to free your hands.
+So, sbt-one-log comes to free your hands.
 
 ## usage 
 tbc...
