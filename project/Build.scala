@@ -54,8 +54,8 @@ object OneLogBuild extends Build{
   lazy val oneLog = Project(
     id = "sbt-one-log",
     base = file("."),
-    settings = buildSettings ++ Seq(libraryDependencies ++= (
-      Seq("org.slf4j" % "slf4j-nop" % "1.7.5")
-    ))
+    settings = buildSettings ++ Seq(
+      libraryDependencies ++= Seq("org.slf4j" % "slf4j-nop" % "1.7.5")
+    )
   )
 }
