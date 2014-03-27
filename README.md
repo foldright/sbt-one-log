@@ -67,3 +67,8 @@ object Build extends sbt.Build {
 
 ```
 
+## for developers
+
+when release a new version, make sure to publish to notes.implicit.ly by [herald][herald] please.
+
+[herald]: https://github.com/n8han/herald

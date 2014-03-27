@@ -1,0 +1,9 @@
+Initial release:
+
+* use slf4j log default
+* use logback classic to be the underlying impl
+* use log4j 99-empty to override log4j dependency and
+* use log4j-over-slf4j to bridge log4j to slf4j
+* use commons-logging 99-empty to override commons-logging dependency and 
+* use jcl-over-slf4j to bridge jcl to slf4j
+* use jul-to-slf4j to brdige jul to slf4j
