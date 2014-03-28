@@ -72,3 +72,7 @@ object Build extends sbt.Build {
 when release a new version, make sure to publish to notes.implicit.ly by [herald][herald] please.
 
 [herald]: https://github.com/n8han/herald
+
+## License
+
+sbt-one-log is under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
