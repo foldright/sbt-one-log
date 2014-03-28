@@ -15,7 +15,12 @@ looking at the Log lib below:
 * slf4j
 * logback
 * log4j 2
-* ...
+* scala-logging
+* slf4s (latest version only support Scala 2.9.1)
+* Grizzled SLF4J
+* AVSL
+* loglady
+* logula (abandoned)
 
 of course, you can keep your project dependency cleanly with one or two log lib (e.g. slf4j and logback)
 
