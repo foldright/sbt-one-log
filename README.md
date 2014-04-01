@@ -53,7 +53,7 @@ Now sbt-one-log will add the log dependency and override other log lib.
 ```scala
 import sbt._
 import sbt.Keys._
-import OneLogKeys._
+import com.zavakid.sbt.OneLog.OneLogKeys._
 
 object Build extends sbt.Build {
 
