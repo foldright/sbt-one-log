@@ -13,9 +13,12 @@ object OneLog extends Plugin {
     val slf4jVersion = settingKey[String]("which slf4j version to use")
     val logbackVersion = settingKey[String]("which logback version to use")
 
+    val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
+
     lazy val oneLogResolvers = Seq(
       "99-empty" at "http://version99.qos.ch/"
     )
+
 
     lazy val logs: Def.Initialize[Seq[ModuleID]] = Def.setting {
       Seq(
@@ -36,7 +39,30 @@ object OneLog extends Plugin {
       , logbackVersion := "1.1.1"
       , resolvers ++= oneLogResolvers
       , libraryDependencies ++= logs.value
+      , libraryDependencies <<= libraryDependencies {
+        deps =>
+          deps.filter(logFilter).map(exclusionUnlessLog)
+      }
     )
+
+    private def logFilter(dep: sbt.ModuleID): Boolean =
+      if (exclusionLogs.contains((dep.organization, dep.name))) false
+      else true
+
+    private def exclusionUnlessLog(dep: sbt.ModuleID): sbt.ModuleID =
+      dep.excludeAll(exclusionLogs: _*)
+
+
+    private lazy val exclusionLogs = Seq(
+      "org.slf4j" -> "slf4j-log4j12",
+      "org.slf4j" -> "slf4j-jcl",
+      "org.slf4j" -> "slf4j-jdk14"
+    )
+
+    private implicit def tuple2ExclusionRule(tuples: Seq[(String, String)]): Seq[ExclusionRule] =
+      tuples.map(t => ExclusionRule(t._1, t._2)
+      )
+
   }
 
 }
