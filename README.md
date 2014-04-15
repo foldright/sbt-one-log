@@ -74,6 +74,16 @@ object Build extends sbt.Build {
 
 ## for developers
 
+#### test
+after (fix bugs)/(add features), please add test case and run test.
+to run test, just 
+```bash
+bin/bump-version.sh
+sbt publishLocal
+sbt scripted
+```
+
+#### release
 when release a new version, make sure to publish to notes.implicit.ly by [herald][herald] please.
 
 [herald]: https://github.com/n8han/herald
