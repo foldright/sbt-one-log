@@ -35,8 +35,8 @@ object OneLog extends Plugin {
     }
 
     val oneLogSettings = Seq[Setting[_]](
-      slf4jVersion := "1.7.6"
-      , logbackVersion := "1.1.1"
+      slf4jVersion := "1.7.7"
+      , logbackVersion := "1.1.2"
       , resolvers ++= oneLogResolvers
       , libraryDependencies ++= logs.value
       , libraryDependencies <<= libraryDependencies {
