@@ -4,6 +4,12 @@ version := "0.1"
 
 scalaVersion := "2.10.3"
 
+libraryDependencies ++= Seq(
+  "org.slf4j" % "slf4j-log4j12" % "1.7.7",
+  "org.slf4j" % "slf4j-jcl" % "1.7.7",  
+  "org.slf4j" % "slf4j-jdk14" % "1.7.7"
+)
+
 oneLogSettings
 
 slf4jVersion := "1.7.5"
@@ -22,8 +28,17 @@ val expected = Set[String](
   ,"log4j:log4j:99-empty"
 )
 
+val excluded = Set[(String,String)](
+  "org.slf4j" -> "slf4j-log4j12",
+  "org.slf4j" -> "slf4j-jcl",
+  "org.slf4j" -> "slf4j-jdk14"
+)
+
 TaskKey[Unit]("check") <<= (libraryDependencies) map { deps =>
   if(!expected.subsetOf(deps.map(_.toString).toSet))
     error("libraryDependencies error!")
+  deps.map(d => (d.organization,d.name)).foreach{ d =>
+    if(excluded.contains(d)) error(s"excludeDependencies [$d] error!")
+  }
   ()
 }
