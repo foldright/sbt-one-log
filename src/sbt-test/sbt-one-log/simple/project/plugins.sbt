@@ -1,1 +1,1 @@
-addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1.1-SNAPSHOT")
+addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1.2-SNAPSHOT")
