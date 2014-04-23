@@ -27,6 +27,7 @@ object OneLogBuild extends Build{
     },
     sbtPlugin := true,
     crossPaths := false,
+    incOptions := incOptions.value.withNameHashing(true),
     scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6"),
     pomExtra := {
       <url>http://www.zavakid.com/sbt-one-log/</url>
