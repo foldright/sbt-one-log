@@ -12,6 +12,8 @@ object OneLog extends Plugin {
 
     val slf4jVersion = settingKey[String]("which slf4j version to use")
     val logbackVersion = settingKey[String]("which logback version to use")
+    val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
+    val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
 
     val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
 
@@ -21,22 +23,31 @@ object OneLog extends Plugin {
 
 
     lazy val logs: Def.Initialize[Seq[ModuleID]] = Def.setting {
-      Seq(
-        "org.slf4j" % "log4j-over-slf4j" % slf4jVersion.value
-        , "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value
-        , "org.slf4j" % "jul-to-slf4j" % slf4jVersion.value
-        , "org.slf4j" % "slf4j-api" % slf4jVersion.value
-        , "ch.qos.logback" % "logback-classic" % logbackVersion.value
-        , "ch.qos.logback" % "logback-core" % logbackVersion.value
-        , "commons-logging" % "commons-logging" % "99-empty"
-        , "commons-logging" % "commons-logging-api" % "99-empty"
-        , "log4j" % "log4j" % "99-empty"
+      val scalaLoggingDeps = if (useScalaLogging.value)
+        Seq(
+          "com.typesafe.scala-logging" % s"scala-logging-slf4j_${scalaBinaryVersion.value}"
+            % scalaLoggingVersion.value force()
+        )
+      else Seq.empty
+
+      scalaLoggingDeps ++ Seq(
+        "org.slf4j" % "slf4j-api" % slf4jVersion.value force()
+        , "org.slf4j" % "log4j-over-slf4j" % slf4jVersion.value force()
+        , "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value force()
+        , "org.slf4j" % "jul-to-slf4j" % slf4jVersion.value force()
+        , "ch.qos.logback" % "logback-classic" % logbackVersion.value force()
+        , "ch.qos.logback" % "logback-core" % logbackVersion.value force()
+        , "commons-logging" % "commons-logging" % "99-empty" force()
+        , "commons-logging" % "commons-logging-api" % "99-empty" force()
+        , "log4j" % "log4j" % "99-empty" force()
       )
     }
 
     val oneLogSettings = Seq[Setting[_]](
       slf4jVersion := "1.7.7"
       , logbackVersion := "1.1.2"
+      , scalaLoggingVersion := "2.1.2"
+      , useScalaLogging := true
       , resolvers ++= oneLogResolvers
       , libraryDependencies ++= logs.value
       , libraryDependencies <<= libraryDependencies {
