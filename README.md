@@ -2,7 +2,7 @@
 sbt-one-log is a sbt plugin make log dependency easy.
 
 ## features
-* uniform your log dependency, current support slf4j and logback, other log lib will bridge to slf4j.
+* uniform your log dependency, current support slf4j and logback, other log lib will be bridged to slf4j.
 
 ## release notes
 [sbt-one-log release notes](https://github.com/zavakid/sbt-one-log/tree/master/notes)
