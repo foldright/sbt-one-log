@@ -40,7 +40,7 @@ Add `sbt-one-log` plugin to the sbt configuration:
 
 ### add plugin in project/plugins.sbt
 ```scala
-addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1.1")
+addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1.2")
 ```
 ### using build.sbt
 **important: oneLogSettings must position after `libraryDependencies`**
