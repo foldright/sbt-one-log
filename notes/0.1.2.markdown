@@ -1,0 +1,6 @@
+0.1.2 release:
+
+* add scala-logging support for the version 2.1.2
+* add scalaLoggingVersion setting for user to choose which version to use
+* add useScalaLogging setting for user to decide to use scala-logging or not
+* add `force()` for all the log libs to override other log libs' version
