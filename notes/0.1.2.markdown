@@ -1,4 +1,4 @@
-0.1.2 release:
+released 0.1.2:
 
 * add scala-logging support for the version 2.1.2
 * add scalaLoggingVersion setting for user to choose which version to use
