@@ -1,4 +1,4 @@
-# sbt-one-log plugin
+# sbt-one-log plugin [![Build Status](https://api.travis-ci.org/zavakid/sbt-one-log.svg)](https://travis-ci.org/zavakid/sbt-one-log)
 sbt-one-log is a sbt plugin make log dependency easy.
 
 sbt-one-log plugin provides you a easy way to manage the log dependency ( avoid the log lib hell), and keep the dependency available when generate pom.xml.
