@@ -2,6 +2,8 @@ package com.zavakid.sbt
 
 import sbt._
 import sbt.Keys._
+import complete._
+import complete.DefaultParsers._
 
 /**
  * Created by ZavaKid on 2014-03-24
@@ -16,6 +18,8 @@ object OneLog extends Plugin {
     val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
 
     val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
+
+    val generateLogbackXML = inputKey[Unit]("generate logback.xml and logback-test.xml if they are not exist")
 
     lazy val oneLogResolvers = Seq(
       "99-empty" at "http://version99.qos.ch/"
@@ -43,6 +47,10 @@ object OneLog extends Plugin {
       )
     }
 
+    val generateLogbackXMLParser: Def.Initialize[Parser[Boolean]] = Def.setting {
+      token(Space ~> "force").?.map(_.fold(false)(_ == "force"))
+    }
+
     val oneLogSettings = Seq[Setting[_]](
       slf4jVersion := "1.7.7"
       , logbackVersion := "1.1.2"
@@ -53,6 +61,10 @@ object OneLog extends Plugin {
       , libraryDependencies <<= libraryDependencies {
         deps =>
           deps.filter(logFilter).map(exclusionUnlessLog)
+      },
+      generateLogbackXML := {
+        val force = generateLogbackXMLParser.parsed
+        println("result: " + force)
       }
     )
 
@@ -73,7 +85,6 @@ object OneLog extends Plugin {
     private implicit def tuple2ExclusionRule(tuples: Seq[(String, String)]): Seq[ExclusionRule] =
       tuples.map(t => ExclusionRule(t._1, t._2)
       )
-
   }
 
 }
