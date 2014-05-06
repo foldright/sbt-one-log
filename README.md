@@ -6,6 +6,7 @@ sbt-one-log plugin provides you a easy way to manage the log dependency ( avoid 
 ## features
 * uniform your log dependency, current support slf4j and logback, other log lib will be bridged to slf4j.
 * scala-logging support, if you don't need it, you can turn off the scala-logging support
+* task `generateLogbackXML` to help you generate the logback.xml and logback-test.xml
 
 ## release notes
 [sbt-one-log release notes](https://github.com/zavakid/sbt-one-log/tree/master/notes)
