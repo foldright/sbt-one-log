@@ -1,2 +1,5 @@
 > check
+> deleteLogback
+> generateLogbackXML
+> checkLogback
 

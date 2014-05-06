@@ -2,3 +2,6 @@
 .idea_modules/
 target/
 *.swp
+
+src/sbt-test/sbt-one-log/simple/src/main/resources/logback.xml
+src/sbt-test/sbt-one-log/simple/src/test/logback-test.xml

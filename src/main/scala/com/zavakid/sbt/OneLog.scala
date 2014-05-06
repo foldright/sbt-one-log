@@ -4,6 +4,7 @@ import sbt._
 import sbt.Keys._
 import complete._
 import complete.DefaultParsers._
+import org.fusesource.scalate.TemplateEngine
 
 /**
  * Created by ZavaKid on 2014-03-24
@@ -63,10 +64,46 @@ object OneLog extends Plugin {
           deps.filter(logFilter).map(exclusionUnlessLog)
       },
       generateLogbackXML := {
-        val force = generateLogbackXMLParser.parsed
-        println("result: " + force)
+        val out = streams.value
+        def generateContent(engine: TemplateEngine, context: Map[String, Any], templatePath: String, baseDir: File, file: File) {
+          val content = engine.layout(templatePath, context)
+          if (!baseDir.exists) baseDir.mkdirs()
+          file.createNewFile()
+          out.log.info(s"generate $file")
+          IO.write(file, content)
+        }
+
+        //val force = generateLogbackXMLParser.parsed
+        val force = false
+        val resourceDir = (resourceDirectory in Compile).value
+
+        val resourceDirInTest = (resourceDirectory in Test).value
+        val logbackXML = resourceDir / "logback.xml"
+
+        val logbackTestXML = resourceDirInTest / "logback-test.xml"
+        val context = Map("projectName" -> name.value)
+        val engine = new TemplateEngine()
+
+        (force, logbackXML.exists()) match {
+          case (false, false) =>
+            generateContent(engine, context, "/sbtonelog/templates/logback.xml.mustache", resourceDir, logbackXML)
+          case (false, true) =>
+            out.log.info(s"${logbackXML.toString} is exist")
+          case (true, _) =>
+            out.log.warn(s"force generate is not support yes")
+        }
+
+        (force, logbackTestXML.exists()) match {
+          case (false, false) =>
+            generateContent(engine, context, "/sbtonelog/templates/logback-test.xml.mustache", resourceDirInTest, logbackTestXML)
+          case (false, true) =>
+            out.log.info(s"${logbackXML.toString} is exist")
+          case (true, _) =>
+            out.log.warn(s"force generate is not support yes")
+        }
       }
     )
+
 
     private def logFilter(dep: sbt.ModuleID): Boolean =
       if (exclusionLogs.contains((dep.organization, dep.name))) false

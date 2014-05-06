@@ -1,4 +1,5 @@
 import OneLogKeys._
+import java.io.File
 
 version := "0.1"
 
@@ -49,6 +50,24 @@ TaskKey[Unit]("check") <<= (allDeps) map { deps =>
     if(excluded.contains(d)) error(s"excludeDependencies [$d] error!")
   }
   ()
+}
+
+TaskKey[Unit]("deleteLogback") := {
+  val resourceDir = (resourceDirectory in Compile).value
+  val resourceDirInTest = (resourceDirectory in Test).value
+  val logbackXML = resourceDir / "logback.xml"
+  val logbackTestXML = resourceDirInTest / "logback-test.xml"
+  logbackXML.delete()
+  logbackTestXML.delete()
+}
+
+TaskKey[Unit]("checkLogback") := {
+  val resourceDir = (resourceDirectory in Compile).value
+  val resourceDirInTest = (resourceDirectory in Test).value
+  val logbackXML = resourceDir / "logback.xml"
+  val logbackTestXML = resourceDirInTest / "logback-test.xml"
+  if(!logbackXML.exists()) error(s"$logbackXML is not generated")
+  if(!logbackTestXML.exists()) error(s"$logbackTestXML is not generated")
 }
 
 val allDeps = taskKey[Seq[ModuleID]]("get all dependency with transivate modueID")
