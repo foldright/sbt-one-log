@@ -1,0 +1,3 @@
+released 0.1.3:
+
+* add task `generateLogbackXML` to help you generate `logback.xml` and `logback-test.xml`
