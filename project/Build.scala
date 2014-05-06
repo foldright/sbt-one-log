@@ -56,7 +56,10 @@ object OneLogBuild extends Build{
     id = "sbt-one-log",
     base = file("."),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= Seq("org.slf4j" % "slf4j-nop" % "1.7.5")
+      libraryDependencies ++= Seq(
+        "org.fusesource.scalate" % "scalate-core_2.10" % "1.6.1",
+        "org.slf4j" % "slf4j-nop" % "1.7.5"
+      )
     )
   )
 }
