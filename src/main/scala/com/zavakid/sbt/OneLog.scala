@@ -17,6 +17,8 @@ object OneLog extends Plugin {
     val logbackVersion = settingKey[String]("which logback version to use")
     val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
     val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
+    val logbackXMLTemplate = settingKey[String]("the logback template path")
+    val logbackTestXMLTemplate = settingKey[String]("the logback-test template path")
 
     val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
 
@@ -62,8 +64,10 @@ object OneLog extends Plugin {
       , libraryDependencies <<= libraryDependencies {
         deps =>
           deps.filter(logFilter).map(exclusionUnlessLog)
-      },
-      generateLogbackXML := {
+      }
+      , logbackXMLTemplate := "/sbtonelog/templates/logback.xml.mustache"
+      , logbackTestXMLTemplate := "/sbtonelog/templates/logback-test.xml.mustache"
+      , generateLogbackXML := {
         val out = streams.value
         def generateContent(engine: TemplateEngine, context: Map[String, Any], templatePath: String, baseDir: File, file: File) {
           val content = engine.layout(templatePath, context)
@@ -86,7 +90,7 @@ object OneLog extends Plugin {
 
         (force, logbackXML.exists()) match {
           case (false, false) =>
-            generateContent(engine, context, "/sbtonelog/templates/logback.xml.mustache", resourceDir, logbackXML)
+            generateContent(engine, context, logbackXMLTemplate.value, resourceDir, logbackXML)
           case (false, true) =>
             out.log.info(s"${logbackXML.toString} is exist")
           case (true, _) =>
@@ -95,7 +99,7 @@ object OneLog extends Plugin {
 
         (force, logbackTestXML.exists()) match {
           case (false, false) =>
-            generateContent(engine, context, "/sbtonelog/templates/logback-test.xml.mustache", resourceDirInTest, logbackTestXML)
+            generateContent(engine, context, logbackTestXMLTemplate.value, resourceDirInTest, logbackTestXML)
           case (false, true) =>
             out.log.info(s"${logbackXML.toString} is exist")
           case (true, _) =>
