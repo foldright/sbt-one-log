@@ -9,7 +9,7 @@ import ScalateKeys._
 
 object OneLogBuild extends Build {
 
-  val SCALA_VERSION = "2.10.3"
+  val SCALA_VERSION = "2.10.4"
 
   lazy val buildSettings = Defaults.defaultSettings ++ scriptedSettings ++ Seq[Setting[_]](
     organization := "com.zavakid.sbt",
