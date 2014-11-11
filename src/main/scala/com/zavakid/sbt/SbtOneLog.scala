@@ -1,5 +1,6 @@
 package com.zavakid.sbt
 
+import sbt.Keys._
 import sbt._
 
 /**
@@ -23,10 +24,18 @@ object OneLogKeys {
 object SbtOneLog extends AutoPlugin {
 
 
-  import OneLogKeys._
+  import com.zavakid.sbt.OneLogKeys._
+
   val autoImport = OneLogKeys
 
-  override def projectSettings: Seq[Def.Setting[_]] = super.projectSettings
+  override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
+    slf4jVersion := "1.7.7"
+    , logbackVersion := "1.1.2"
+    , scalaLoggingVersion := "2.1.2"
+    , useScalaLogging := true
+    , resolvers += "99-empty" at "http://version99.qos.ch/"
+
+  )
 
 
 }
