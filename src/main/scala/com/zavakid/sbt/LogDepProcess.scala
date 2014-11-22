@@ -7,7 +7,7 @@ import scala.collection.immutable
 
 /**
  *
- * @author zebin.xuzb 2014-11-21
+ * @author zavakid 2014-11-21
  */
 object LogDepProcess {
 
@@ -30,7 +30,10 @@ object LogDepProcess {
   def processStrategySeq = Seq(
     slf4jApiProcess,
     logbackCoreProcess,
-    logbackClassicProcess
+    logbackClassicProcess,
+    log4jProcess,
+    commonLoggingProcess,
+    julLogProcess
   )
 
   val slf4jApiProcess: ProcessStrategy = { context =>
@@ -51,15 +54,69 @@ object LogDepProcess {
     context.copy(libraryDeps = addOrReplaceModuleId(logbackClassic, context.libraryDeps))
   }
 
-  // find if have log4j:log4j:_ dependency, have have:
+  // find if have log4j:log4j | "org.slf4j" % "log4j-over-slf4j" , if have:
   // 1. exclude it( don't exclude twice )
-  // 2. add log4j:log4j:99-empty
-  // 3. add "org.slf4j" % "log4j-over-slf4j"
-  // 4. add repo?
+  // 2. exclude "org.slf4j" % "slf4j-log4j12"
+  // 3. add log4j:log4j:99-empty
+  // 4. add "org.slf4j" % "log4j-over-slf4j"
+  // 5. add repo?
   val log4jProcess: ProcessStrategy = { context =>
-    val slf4j = "log4j" % "log4j" % "99-empty" force()
+    val version = context.extracted.get(slf4jVersion in context.p)
+    val log4j = "log4j" % "log4j" % "99-empty" force()
+    val log4jOverSlf4j = "org.slf4j" % "log4j-over-slf4j" % version force()
+    if(haveDependency(context, log4j) || haveDependency(context, "org.slf4j" % "slf4j-log4j12" % "-1")){
+      Option(replaceModuleId(excludeForModuleID(context.directLib, "log4j", "log4j"), context.libraryDeps)).map {
+        replaceModuleId(excludeForModuleID(context.directLib, "org.slf4j", "slf4j-log4j12"), _)
+      }.map{
+        addOrReplaceModuleId(log4j, _)
+      }.map{
+        addOrReplaceModuleId(log4jOverSlf4j, _)
+      }.map{ libs =>
+        context.copy(libraryDeps = libs)
+      }.get
+    }
+    else context
+  }
 
-    ???
+  // find if have "commons-logging" % "commons-logging" |  "commons-logging" % "commons-logging-api" | "org.slf4j" % "slf4j-jcl", if have:
+  // 1. exclude them (don't exclude twice)
+  // 2. exclude "org.slf4j" % "slf4j-jcl"
+  // 2. add "commons-logging" % "commons-logging" % "99-empty" force()
+  // 3. add "commons-logging" % "commons-logging-api" % "99-empty" force()
+  // 4. add "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value force()
+  // 5.
+  val commonLoggingProcess: ProcessStrategy = { context =>
+    val version = context.extracted.get(slf4jVersion in context.p)
+    val jcl = "commons-logging" % "commons-logging" % "99-empty" force()
+    val jclApi = "commons-logging" % "commons-logging-api" % "99-empty" force()
+    val jclOverSlf4j = "org.slf4j" % "jcl-over-slf4j" % version force()
+    if(haveDependency(context, jcl) || haveDependency(context, jclApi) || haveDependency(context, "org.slf4j" % "slf4j-jcl" % "-1")){
+      Option(replaceModuleId(excludeForModuleID(context.directLib, "commons-logging", "commons-logging"), context.libraryDeps)).map{
+        replaceModuleId(excludeForModuleID(context.directLib, "commons-logging", "commons-logging-api"), _)
+      }.map{
+        replaceModuleId(excludeForModuleID(context.directLib, "org.slf4j", "slf4j-jcl"), _)
+      }.map{
+        addOrReplaceModuleId(jcl, _)
+      }.map{
+        addOrReplaceModuleId(jclApi, _)
+      }.map{
+        addOrReplaceModuleId(jclOverSlf4j, _)
+      }.map{ libs =>
+        context.copy(libraryDeps = libs)
+      }.get
+    } else context
+  }
+
+  // if hava dependency  "org.slf4j" -> "slf4j-jdk14", exclude it
+  // add "org.slf4j" % "jul-to-slf4j"
+  val julLogProcess: ProcessStrategy = { context =>
+    val version = context.extracted.get(slf4jVersion in context.p)
+    val julSlf4j = "org.slf4j" % "jul-to-slf4j" % version force()
+    val newContext = context.copy(libraryDeps = addOrReplaceModuleId(julSlf4j, context.libraryDeps))
+    if(haveDependency(newContext, "org.slf4j" % "slf4j-jdk14" % "-1")){
+      val newLibs = replaceModuleId(excludeForModuleID(newContext.directLib, "org.slf4j", "slf4j-jdk14"), newContext.libraryDeps)
+      newContext.copy(libraryDeps = newLibs)
+    } else newContext
   }
 
 
@@ -84,7 +141,14 @@ object LogDepProcess {
       }
     } else libraryDeps
 
-
+  //find dependency with not same version
+  def haveDependency(context: ProcessContext, find: ModuleID): Boolean = {
+    def doFindDep(moduleIds: Seq[IvyGraphMLDependencies.ModuleId], find: ModuleID, graph: IvyGraphMLDependencies.ModuleGraph): Boolean = moduleIds.exists { mid =>
+      if (isSameArtifactButDiffVersion(mid, find)) true
+      else doFindDep(graph.dependencyMap(mid).map(_.id), find, graph)
+    }
+    doFindDep(Seq(context.directDep), find, context.graph)
+  }
 
   def excludeForModuleID(module: ModuleID, org: String, name: String): ModuleID =
     if (module.exclusions.exists { e =>
@@ -105,7 +169,20 @@ object LogDepProcess {
       libA.name.equals(libB.name) &&
       additional(libA, libB)
 
+  private def isSameArtifactWithVersion(libA: IvyGraphMLDependencies.ModuleId, libB: ModuleID) =
+    isSameArtifact(libA, libB)(isSameVersion)
+
+  private def isSameArtifactButDiffVersion(libA: IvyGraphMLDependencies.ModuleId, libB: ModuleID) =
+    isSameArtifact(libA, libB)(isNotSameVersion)
+
+  private def isSameVersion(libA: IvyGraphMLDependencies.ModuleId, libB: ModuleID) =
+    libA.version.equals(libB.revision)
+
+  private def isNotSameVersion(libA: IvyGraphMLDependencies.ModuleId, libB: ModuleID) =
+    !isSameVersion(libA, libB)
+
   private implicit def isSameArtifactTrue(a: ModuleID, b: ModuleID): Boolean = true
+
   private implicit def isSameArtifactTrue(a: IvyGraphMLDependencies.ModuleId, b: ModuleID): Boolean = true
 }
 

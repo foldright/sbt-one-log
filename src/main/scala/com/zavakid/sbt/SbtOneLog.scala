@@ -46,18 +46,17 @@ object SbtOneLog extends AutoPlugin {
       if (SbtOneLog.appended)
         state
       else {
-        println("======================= onLoad start =======================")
+        println("sbt-one-log start process...")
         import state._
-        println(definedCommands.size + " registered commands")
-        println("commands to run: " + remainingCommands)
-        println()
-
-        println("original arguments: " + configuration.arguments)
-        println("base directory: " + configuration.baseDirectory)
-        println()
-
-        println("sbt version: " + configuration.provider.id.version)
-        println("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
+//        println(definedCommands.size + " registered commands")
+//        println("commands to run: " + remainingCommands)
+//        println()
+//        println("original arguments: " + configuration.arguments)
+//        println("base directory: " + configuration.baseDirectory)
+//        println()
+//
+//        println("sbt version: " + configuration.provider.id.version)
+//        println("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
 
         val buildStruct = Project.structure(state)
         val extracted = Project.extract(state)
@@ -103,6 +102,7 @@ object SbtOneLog extends AutoPlugin {
         SbtOneLog.appended = true
         //extracted.append(appendedSettings, state)
         val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
+        println("sbt-one-log finished process...")
         Project.setProject(extracted.session, newStructure, newState)
       }
     }
@@ -118,18 +118,6 @@ object SbtOneLog extends AutoPlugin {
     , computeIvReportFunction := computeIvReportFunctionImpl.value
     , computeIvyReport <<= computeIvReportFunction map (_(Compile.toString())) dependsOn (update in Compile)
     , computeModuleGraph <<= computeIvyReport map (absoluteReportPath andThen IvyGraphMLDependencies.graph)
-    //    , libraryDependencies := Seq(
-    //      "org.slf4j" % "slf4j-api" % slf4jVersion.value force()
-    //      , "org.slf4j" % "log4j-over-slf4j" % slf4jVersion.value force()
-    //      , "org.slf4j" % "jcl-over-slf4j" % slf4jVersion.value force()
-    //      , "org.slf4j" % "jul-to-slf4j" % slf4jVersion.value force()
-    //      , "ch.qos.logback" % "logback-classic" % logbackVersion.value force()
-    //      , "ch.qos.logback" % "logback-core" % logbackVersion.value force()
-    //      , "commons-logging" % "commons-logging" % "99-empty" force()
-    //      , "commons-logging" % "commons-logging-api" % "99-empty" force()
-    //      , "log4j" % "log4j" % "99-empty" force()
-    //    )
-
   )
 
   // =============
