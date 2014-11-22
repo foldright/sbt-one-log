@@ -76,16 +76,16 @@ object SbtOneLog extends AutoPlugin {
           directDeps.foldLeft(libraryDeps.toIndexedSeq) {
             case (libs, (dep, libDep)) =>
               val context = ProcessContext(dep.id, libDep, graph, libs, p, extracted)
-              slf4jApiProcess(context).libraryDeps
+              processStrategies(context).libraryDeps
           }
         }
 
         val (transformed, newState) = buildStruct.allProjectRefs.filter { p =>
           //FIXME! .task is deprecated
           extracted.getOpt((computeModuleGraph in p).task).isDefined
-        }.foldLeft((extracted.session.mergeSettings, state)) { case ((allSettings, state), p) =>
+        }.foldLeft((extracted.session.mergeSettings, state)) { case ((allSettings, foldedState), p) =>
           // need receive new state
-          val (newState,depGraph) = extracted.runTask(computeModuleGraph in p, state)
+          val (newState,depGraph) = extracted.runTask(computeModuleGraph in p, foldedState)
           val newLibs = compute(depGraph, extracted.get(libraryDependencies in p), p)
           (allSettings.map {
             s => s.key.key match {
@@ -107,12 +107,6 @@ object SbtOneLog extends AutoPlugin {
       }
     }
   }
-
-  private lazy val exclusionLogs = Set(
-    "org.slf4j" -> "slf4j-log4j12",
-    "org.slf4j" -> "slf4j-jcl",
-    "org.slf4j" -> "slf4j-jdk14"
-  )
 
   override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
     slf4jVersion := "1.7.7"

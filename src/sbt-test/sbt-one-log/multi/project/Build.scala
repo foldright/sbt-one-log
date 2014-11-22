@@ -34,6 +34,9 @@ object Build extends sbt.Build {
     id = "module2",
     base = file("module2"),
     settings = commonSettings ++ Seq(
+      libraryDependencies := libraryDependencies.value ++ Seq(
+        "commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
+      )
     )
   ).enablePlugins(SbtOneLog)
 }
