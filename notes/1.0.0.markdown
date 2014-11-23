@@ -1,0 +1,7 @@
+released 1.0.0:
+
+* compatible with AutoPlugin ( since 0.13.5), just enablePlugins(SbtOneLog), and everything is OK
+* automatic append log jar in the libraryDependencies, and exclude conflicting jar (do't config anything, just enable the plugin) 
+* remove `logbackTestXMLTemplate`, please use `test:logbackXMLTemplate` instead
+* remove scalaLoggingVersion, instead use 2.1.2 in scala 2.10 env, and use 3.1.0 in scala 2.11 ( since scala Logging 2.1.2 and 3.1.0 have different artifacts)
+* set `prudent` mode false by default, see more at [logback prudent](http://logback.qos.ch/manual/appenders.html#prudent)

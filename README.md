@@ -4,12 +4,54 @@ sbt-one-log is a sbt plugin make log dependency easy.
 sbt-one-log plugin provides you a easy way to manage the log dependency ( avoid the log lib hell), and keep the dependency available when generate pom.xml.
 
 ## features
-* uniform your log dependency, current support slf4j and logback, other log lib will be bridged to slf4j.
+* automatic uniform your log dependency, current support slf4j and logback, other log lib will be bridged to slf4j.
 * scala-logging support, if you don't need it, you can turn off the scala-logging support
 * task `generateLogbackXML` to help you generate the logback.xml and logback-test.xml
 
 ## release notes
-[sbt-one-log release notes](https://github.com/zavakid/sbt-one-log/tree/master/notes)
+[sbt-one-log release notes](https://github.com/CSUG/sbt-one-log/tree/master/notes)
+
+## usage 
+Add `sbt-one-log` plugin to the sbt configuration:
+
+### add plugin in project/plugins.sbt
+```scala
+addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "1.0.0")
+```
+for sbt under 0.13.5, using [0.1.3](https://github.com/CSUG/sbt-one-log/tree/branch-0.1.3)
+### using build.sbt
+**important: oneLogSettings must position after `libraryDependencies`**
+
+```scala
+// oneLogSettings will add libDependencies and resolvers
+lazy val yourProject = (project in file(".")).enablePlugins(SbtOneLog)
+```
+Now sbt-one-log will automatic add the log dependency and override other log lib.
+
+### using project/Build.scala
+**important: oneLogSettings must position after `libraryDependencies`**
+
+```scala
+import sbt._
+import sbt.Keys._
+import import com.zavakid.sbt._
+
+object Build extends sbt.Build {
+
+  // add oneLogSettings to your settings
+  lazt val root = Project(
+    id = "example",
+    base = file(.),
+  ).enablePlugins(SbtOneLog)
+
+  //... 
+  //other settings
+  //...
+}
+
+```
+
+and everything is OK.
 
 ## why sbt-one-log
 Scala can leverage lots of perfect Java lib, but it's chaotic with the Log libs in Java world.
@@ -38,50 +80,6 @@ also, you can add jcl-over-slf4j and exclud commons-logging explicitly in librar
 A better way is to explicitly declare dependency commons-logging with the sepcial version 99-empty.
 
 so, sbt-one-log comes to free your hands.
-
-## usage 
-Add `sbt-one-log` plugin to the sbt configuration:
-
-### add plugin in project/plugins.sbt
-```scala
-addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "0.1.3")
-```
-### using build.sbt
-**important: oneLogSettings must position after `libraryDependencies`**
-
-```scala
-import OneLogKeys._
-
-// oneLogSettings will add libDependencies and resolvers
-oneLogSettings
-```
-
-Now sbt-one-log will add the log dependency and override other log lib.
-
-### using project/Build.scala
-**important: oneLogSettings must position after `libraryDependencies`**
-
-```scala
-import sbt._
-import sbt.Keys._
-import com.zavakid.sbt.OneLog.OneLogKeys._
-
-object Build extends sbt.Build {
-
-  // add oneLogSettings to your settings
-  lazt val root = Project(
-    id = "example",
-    base = file(.),
-  ).settings(oneLogSettings: _*)
-
-  //... 
-  //other settings
-  //...
-}
-
-
-
-```
 
 ## for developers
 
