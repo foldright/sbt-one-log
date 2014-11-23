@@ -24,8 +24,8 @@ object Build extends sbt.Build {
     settings = commonSettings ++ Seq(
       libraryDependencies := libraryDependencies.value ++ Seq(
         "org.mybatis" % "mybatis" % "3.2.7" //dependent slf4j-log4j12
-        //,"commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
-        //, "com.alibaba.otter" % "node.deployer" % "4.2.11"
+        ,"commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
+        , "com.alibaba.otter" % "node.deployer" % "4.2.11"
       )
     )
   ).enablePlugins(SbtOneLog)

@@ -161,7 +161,7 @@ object LogDepProcess {
         else lib
       }
     } else {
-      newModule +: libraryDeps
+       libraryDeps :+ newModule
     }
 
   def replaceModuleId(newModule: ModuleID, libraryDeps: immutable.IndexedSeq[ModuleID]): immutable.IndexedSeq[ModuleID] =
