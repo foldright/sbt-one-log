@@ -14,7 +14,7 @@ object SbtOneLogKeys {
 
   val slf4jVersion = settingKey[String]("which slf4j version to use")
   val logbackVersion = settingKey[String]("which logback version to use")
-  val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
+  //val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
   val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
   val logbackXMLTemplate = settingKey[String]("the logback template path")
   val logbackTestXMLTemplate = settingKey[String]("the logback-test template path")
@@ -46,17 +46,17 @@ object SbtOneLog extends AutoPlugin {
       if (SbtOneLog.appended)
         state
       else {
-        val stream = streams.value
-        stream.log.info("sbt-one-log start process...")
+        println("sbt-one-log start process...")
         import state._
-//        stream.log.info(definedCommands.size + " registered commands")
-//        stream.log.info("commands to run: " + remainingCommands)
-//        stream.log.info()
-//        stream.log.info("original arguments: " + configuration.arguments)
-//        stream.log.info("base directory: " + configuration.baseDirectory)
+//        println(definedCommands.size + " registered commands")
+//        println("commands to run: " + remainingCommands)
+//        println()
+//        println("original arguments: " + configuration.arguments)
+//        println("base directory: " + configuration.baseDirectory)
+//        println()
 //
-//        stream.log.info("sbt version: " + configuration.provider.id.version)
-//        stream.log.info("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
+//        println("sbt version: " + configuration.provider.id.version)
+//        println("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
 
         val buildStruct = Project.structure(state)
         val extracted = Project.extract(state)
@@ -102,7 +102,7 @@ object SbtOneLog extends AutoPlugin {
         SbtOneLog.appended = true
         //extracted.append(appendedSettings, state)
         val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
-        stream.log.info("sbt-one-log finished process")
+        println("sbt-one-log finished process")
         Project.setProject(extracted.session, newStructure, newState)
       }
     }
@@ -111,7 +111,6 @@ object SbtOneLog extends AutoPlugin {
   override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
     slf4jVersion := "1.7.7"
     , logbackVersion := "1.1.2"
-    , scalaLoggingVersion := "2.1.2"
     , useScalaLogging := true
     , resolvers += "99-empty" at "http://version99.qos.ch/"
     //, libraryDependencies ++= logs.value
