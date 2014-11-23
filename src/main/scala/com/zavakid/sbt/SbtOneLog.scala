@@ -3,6 +3,7 @@ package com.zavakid.sbt
 import com.zavakid.sbt.IvyGraphMLDependencies._
 import com.zavakid.sbt.LogDepProcess._
 import org.apache.ivy.core.resolve.ResolveOptions
+import org.fusesource.scalate.TemplateEngine
 import sbt.Keys._
 import sbt._
 
@@ -17,9 +18,10 @@ object SbtOneLogKeys {
   //val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
   val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
   val logbackXMLTemplate = settingKey[String]("the logback template path")
-  val logbackTestXMLTemplate = settingKey[String]("the logback-test template path")
+  val logbackFileName = settingKey[String]("the logback file name")
+  //val logbackTestXMLTemplate = settingKey[String]("the logback-test template path")
   val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
-  val generateLogbackXML = inputKey[Unit]("generate logback.xml and logback-test.xml if they are not exist")
+  val generateLogbackXML = TaskKey[Unit]("generate-logback-xml", "generate logback.xml and logback-test.xml in test if they are not exist")
 
   // from sbt-dependency-graph
   val computeIvReportFunction = TaskKey[String => File]("compute-ivy-report-function",
@@ -47,16 +49,6 @@ object SbtOneLog extends AutoPlugin {
         state
       else {
         println("sbt-one-log start process...")
-        import state._
-//        println(definedCommands.size + " registered commands")
-//        println("commands to run: " + remainingCommands)
-//        println()
-//        println("original arguments: " + configuration.arguments)
-//        println("base directory: " + configuration.baseDirectory)
-//        println()
-//
-//        println("sbt version: " + configuration.provider.id.version)
-//        println("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
 
         val buildStruct = Project.structure(state)
         val extracted = Project.extract(state)
@@ -84,7 +76,7 @@ object SbtOneLog extends AutoPlugin {
           extracted.getOpt((computeModuleGraph in p).task).isDefined
         }.foldLeft((extracted.session.mergeSettings, state)) { case ((allSettings, foldedState), p) =>
           // need receive new state
-          val (newState,depGraph) = extracted.runTask(computeModuleGraph in p, foldedState)
+          val (newState, depGraph) = extracted.runTask(computeModuleGraph in p, foldedState)
           val newLibs = compute(depGraph, extracted.get(libraryDependencies in p), p)
           (allSettings.map {
             s => s.key.key match {
@@ -117,7 +109,44 @@ object SbtOneLog extends AutoPlugin {
     , computeIvReportFunction := computeIvReportFunctionImpl.value
     , computeIvyReport <<= computeIvReportFunction map (_(Compile.toString())) dependsOn (update in Compile)
     , computeModuleGraph <<= computeIvyReport map (absoluteReportPath andThen IvyGraphMLDependencies.graph)
-  )
+  ) ++ inConfig(Compile) {
+    Seq(
+      logbackXMLTemplate := "/sbtonelog/templates/logback.xml.mustache"
+      , logbackFileName := "logback.xml"
+      , generateLogbackXML := generateLogbackXMLImpl.value
+    )
+  } ++ inConfig(Test) {
+    Seq(
+      logbackXMLTemplate := "/sbtonelog/templates/logback-test.xml.mustache"
+      , logbackFileName := "logback-test.xml"
+      , generateLogbackXML := generateLogbackXMLImpl.value
+    )
+  }
+
+  lazy val generateLogbackXMLImpl: Def.Initialize[Task[Unit]] = Def.task {
+    val out = streams.value
+    def generateContent(engine: TemplateEngine, context: Map[String, Any], templatePath: String, baseDir: File, file: File) {
+      val content = engine.layout(templatePath, context)
+      if (!baseDir.exists) baseDir.mkdirs()
+      file.createNewFile()
+      out.log.info(s"generate $file")
+      IO.write(file, content)
+    }
+    //val force = generateLogbackXMLParser.parsed
+    val force = false
+    val resourceDir = resourceDirectory.value
+    val logbackXML = resourceDir / logbackFileName.value
+    val context = Map("projectName" -> name.value)
+    val engine = new TemplateEngine()
+    (force, logbackXML.exists()) match {
+      case (false, false) =>
+        generateContent(engine, context, logbackXMLTemplate.value, resourceDir, logbackXML)
+      case (false, true) =>
+        out.log.info(s"${logbackXML.toString} is exist")
+      case (true, _) =>
+        out.log.warn(s"force generate is not support yes")
+    }
+  }
 
   // =============
   // from https://github.com/jrudolph/sbt-dependency-graph/blob/master/src/main/scala/net/virtualvoid/sbt/graph/Plugin.scala
