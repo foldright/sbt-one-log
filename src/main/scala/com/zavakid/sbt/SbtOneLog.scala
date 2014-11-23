@@ -46,17 +46,17 @@ object SbtOneLog extends AutoPlugin {
       if (SbtOneLog.appended)
         state
       else {
-        println("sbt-one-log start process...")
+        val stream = streams.value
+        stream.log.info("sbt-one-log start process...")
         import state._
-//        println(definedCommands.size + " registered commands")
-//        println("commands to run: " + remainingCommands)
-//        println()
-//        println("original arguments: " + configuration.arguments)
-//        println("base directory: " + configuration.baseDirectory)
-//        println()
+//        stream.log.info(definedCommands.size + " registered commands")
+//        stream.log.info("commands to run: " + remainingCommands)
+//        stream.log.info()
+//        stream.log.info("original arguments: " + configuration.arguments)
+//        stream.log.info("base directory: " + configuration.baseDirectory)
 //
-//        println("sbt version: " + configuration.provider.id.version)
-//        println("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
+//        stream.log.info("sbt version: " + configuration.provider.id.version)
+//        stream.log.info("Scala version (for sbt): " + configuration.provider.scalaProvider.version)
 
         val buildStruct = Project.structure(state)
         val extracted = Project.extract(state)
@@ -102,7 +102,7 @@ object SbtOneLog extends AutoPlugin {
         SbtOneLog.appended = true
         //extracted.append(appendedSettings, state)
         val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
-        println("sbt-one-log finished process...")
+        stream.log.info("sbt-one-log finished process")
         Project.setProject(extracted.session, newStructure, newState)
       }
     }
