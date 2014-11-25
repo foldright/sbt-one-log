@@ -100,3 +100,5 @@ when release a new version, make sure to publish to notes.implicit.ly by [herald
 ## License
 
 sbt-one-log is under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/CSUG/sbt-one-log/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
