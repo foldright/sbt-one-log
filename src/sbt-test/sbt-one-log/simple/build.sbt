@@ -77,4 +77,4 @@ allDeps <<= (externalDependencyClasspath in Compile) map {
     cp.flatMap(_.get(Keys.moduleID.key))
 }
 
-net.virtualvoid.sbt.graph.Plugin.graphSettings
+//net.virtualvoid.sbt.graph.Plugin.graphSettings
