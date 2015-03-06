@@ -8,6 +8,11 @@ object Build extends sbt.Build {
     Seq(
      scalaVersion := "2.10.3"
      ,version := "0.1"
+     ,resolvers ++= Seq(
+       "typesafe" at "http://repo.typesafe.com/typesafe/releases/"
+       ,"datanucleus" at "http://www.datanucleus.org/downloads/maven2/"
+     )
+
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 
   lazy val root = Project(
@@ -25,7 +30,7 @@ object Build extends sbt.Build {
       libraryDependencies := libraryDependencies.value ++ Seq(
         "org.mybatis" % "mybatis" % "3.2.7" //dependent slf4j-log4j12
         ,"commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
-        , "com.alibaba.otter" % "node.deployer" % "4.2.11"
+        ,"com.alibaba.otter" % "node.deployer" % "4.2.11"
       )
     )
   ).enablePlugins(SbtOneLog)
