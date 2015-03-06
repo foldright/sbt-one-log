@@ -128,34 +128,10 @@ object IvyGraphMLDependencies extends App {
     ModuleGraph(newNodes, newEdges)
   }
 
-  def displayModule(module: Module): String =
-    red(module.id.idString +
-      module.extraInfo +
-      module.error.map(" (error: " + _ + ")").getOrElse("") +
-      module.evictedByVersion.map(_ formatted " (evicted by: %s)").getOrElse(""), module.hadError)
-
-
   def moduleIdFromElement(element: Node, version: String): ModuleId =
     ModuleId(element.attribute("organisation").get.text, element.attribute("name").get.text, version)
 
   private def buildDoc(ivyReportFile: String) = ConstructingParser.fromSource(io.Source.fromFile(ivyReportFile), preserveWS = false).document()
-
-  def red(str: String, doRed: Boolean): String =
-    if (ConsoleLogger.formatEnabled && doRed)
-      Console.RED + str + Console.RESET
-    else
-      str
-
-  def die(msg: String): Nothing = {
-    println(msg)
-    sys.exit(1)
-  }
-
-  def usage: String =
-    "Usage: <ivy-report-file> <output-file>"
-
-  val reportFile = args.lift(0).filter(f => new File(f).exists).getOrElse(die(usage))
-  val outputFile = args.lift(1).getOrElse(die(usage))
 }
 
 object ModuleGraphProtocol extends DefaultProtocol {
