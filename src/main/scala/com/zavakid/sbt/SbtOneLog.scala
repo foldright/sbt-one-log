@@ -41,62 +41,84 @@ object SbtOneLog extends AutoPlugin {
 
   override def requires: Plugins = super.requires
 
-  var appended = false
 
   override def globalSettings: Seq[Def.Setting[_]] = {
-    onLoad := onLoad.value andThen { state =>
-      if (SbtOneLog.appended)
-        state
-      else {
-        println("sbt-one-log start process...")
+    onLoad := onLoad.value andThen doTask
+    //      onLoad := onLoad.value andThen task
 
-        val buildStruct = Project.structure(state)
-        val extracted = Project.extract(state)
+  }
 
-        def compute(graph: ModuleGraph, libraryDeps: Seq[sbt.ModuleID], p: ProjectRef): IndexedSeq[ModuleID] = {
-          val roots = graph.nodes.filter(n => !graph.edges.exists(_._2 == n.id)).sortBy(_.id.idString)
-          val directDeps = roots.flatMap(d => graph.dependencyMap(d.id))
-            .filter(_.evictedByVersion.isEmpty)
-            .filterNot(d => d.id.organisation.equals("org.scala-lang"))
-            .flatMap { dep => // filter deps which not contains sub projects
-            libraryDeps.find { libDep =>
-              libDep.organization.equals(dep.id.organisation) && libDep.name.equals(dep.id.name)
-            }.map(dep -> _)
-          }
+  var appended = false
+  val doTask: State => State = { state =>
+    if (SbtOneLog.appended)
+      state
+    else {
+      println("sbt-one-log start process...")
 
-          directDeps.foldLeft(libraryDeps.toIndexedSeq) {
-            case (libs, (dep, libDep)) =>
-              val context = ProcessContext(dep.id, libDep, graph, libs, p, extracted)
-              processStrategies(context).libraryDeps
-          }
+      val buildStruct = Project.structure(state)
+      val extracted = Project.extract(state)
+
+      def compute(graph: ModuleGraph, libraryDeps: Seq[sbt.ModuleID], p: ProjectRef): IndexedSeq[ModuleID] = {
+        val roots = graph.nodes.filter(n => !graph.edges.exists(_._2 == n.id)).sortBy(_.id.idString)
+        val directDeps = roots.flatMap(d => graph.dependencyMap(d.id))
+          .filter(_.evictedByVersion.isEmpty)
+          .filterNot(d => d.id.organisation.equals("org.scala-lang"))
+          .flatMap { dep => // filter deps which not contains sub projects
+          libraryDeps.find { libDep =>
+            libDep.organization.equals(dep.id.organisation) && libDep.name.equals(dep.id.name)
+          }.map(dep -> _)
         }
 
-        val (transformed, newState) = buildStruct.allProjectRefs.filter { p =>
-          //FIXME! .task is deprecated
-          extracted.getOpt((computeModuleGraph in p).task).isDefined
-        }.foldLeft((extracted.session.mergeSettings, state)) { case ((allSettings, foldedState), p) =>
-          // need receive new state
-          val (newState, depGraph) = extracted.runTask(computeModuleGraph in p, foldedState)
-          val newLibs = compute(depGraph, extracted.get(libraryDependencies in p), p)
-          (allSettings.map {
-            s => s.key.key match {
-              //case s if "libraryDependencies".equals(s.key.key.label) =>
-              case libraryDependencies.key =>
-                // ensure just modify this project's dependencies
-                s.key.scope.project.toOption.filter(p.equals(_)).fold(s.asInstanceOf[Setting[Seq[ModuleID]]]) { _ =>
-                  s.asInstanceOf[Setting[Seq[ModuleID]]].mapInit((_, _) => newLibs)
-                }
-              case _ => s
-            }
-          }, newState)
+        directDeps.foldLeft(libraryDeps.toIndexedSeq) {
+          case (libs, (dep, libDep)) =>
+            val context = ProcessContext(dep.id, libDep, graph, libs, p, extracted)
+            processStrategies(context).libraryDeps
         }
-
-        SbtOneLog.appended = true
-        //extracted.append(appendedSettings, state)
-        val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
-        println("sbt-one-log finished process")
-        Project.setProject(extracted.session, newStructure, newState)
       }
+
+      val (transformed, newState) = buildStruct.allProjectRefs.filter { p =>
+        //FIXME! .task is deprecated
+        extracted.getOpt((computeModuleGraph in p).task).isDefined
+      }.foldLeft((extracted.session.mergeSettings, state)) { case ((allSettings, foldedState), p) =>
+        // need receive new state
+        val (newState, depGraph) = extracted.runTask(computeModuleGraph in p, foldedState)
+        val newLibs = compute(depGraph, extracted.get(libraryDependencies in p), p)
+        (allSettings.map {
+          s => s.key.key match {
+            //case s if "libraryDependencies".equals(s.key.key.label) =>
+            case libraryDependencies.key =>
+              // ensure just modify this project's dependencies
+              s.key.scope.project.toOption.filter(p.equals(_)).fold(s.asInstanceOf[Setting[Seq[ModuleID]]]) { _ =>
+                s.asInstanceOf[Setting[Seq[ModuleID]]].mapInit((_, _) => newLibs)
+              }
+            case _ => s
+          }
+        }, newState)
+      }
+
+      SbtOneLog.appended = true
+      //extracted.append(appendedSettings, state)
+      val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
+      println("sbt-one-log finished process")
+      Project.setProject(extracted.session, newStructure, newState)
+    }
+  }
+
+
+  def task: State => State = { state =>
+    val extracted = Project.extract(state)
+    extracted.structure.allProjectRefs.foldLeft(state) { (state, p) =>
+      val ds: Seq[ModuleID] = extracted.get(libraryDependencies in p)
+      println("=====" + p + " dep : ")
+      ds.foreach(println)
+      println("===========")
+      if (p.project == "module1") {
+        val (newState, _) = extracted.runTask(update.in(p).in(Compile), state)
+        extracted.append(Seq[Setting[_]](
+          libraryDependencies in p := Seq()
+        ), newState)
+      } else state
+
     }
   }
 

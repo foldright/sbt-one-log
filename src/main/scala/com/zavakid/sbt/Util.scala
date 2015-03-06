@@ -6,7 +6,6 @@ package com.zavakid.sbt
  * and delete some unneed function
  */
 
-import java.io.File
 
 import sbinary.{DefaultProtocol, Format}
 import sbt.ConsoleLogger
