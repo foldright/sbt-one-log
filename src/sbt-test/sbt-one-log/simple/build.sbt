@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-jcl" % "1.7.7",
   "org.slf4j" % "slf4j-jdk14" % "1.7.7",
   "org.mybatis" % "mybatis" % "3.2.7", //dependent slf4j-log4j12
-  "commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
+  "commons-beanutils" % "commons-beanutils" % "1.9.1", //dependent commons-logging
+  "log4j" % "log4j" % "1.2.17"
 )
 
 slf4jVersion := "1.7.5"
