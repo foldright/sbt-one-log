@@ -123,7 +123,7 @@ object SbtOneLog extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
-    slf4jVersion := "1.7.7"
+    slf4jVersion := "1.7.10"
     , logbackVersion := "1.1.2"
     , useScalaLogging := true
     , resolvers += "99-empty" at "http://version99.qos.ch/"
