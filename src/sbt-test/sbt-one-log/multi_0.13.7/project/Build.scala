@@ -6,7 +6,9 @@ object Build extends sbt.Build {
 
   val commonSettings = Defaults.defaultSettings ++
     Seq(
-     scalaVersion := "2.10.3"
+     scalaVersion := "2.11.5"
+     ,ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+     ,organization := "com.me.module1_2.11"
      ,version := "0.1"
      ,resolvers ++= Seq(
        "typesafe" at "http://repo.typesafe.com/typesafe/releases/"
@@ -21,7 +23,7 @@ object Build extends sbt.Build {
     settings = commonSettings ++ Seq(
         // custom settings here
     )
-  ).dependsOn(module1, module2, module3)
+  ).aggregate(module1, module2, module3)
 
   lazy val module1 = Project(
     id = "module1",

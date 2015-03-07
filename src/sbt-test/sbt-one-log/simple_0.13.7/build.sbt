@@ -5,6 +5,7 @@ lazy val simple_0_13_7 = (project in file(".")).enablePlugins(SbtOneLog)
 version := "0.1"
 
 scalaVersion := "2.11.5"
+ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
 
 libraryDependencies ++= Seq(
   "org.mybatis" % "mybatis" % "3.2.7", //dependent slf4j-log4j12
@@ -12,7 +13,6 @@ libraryDependencies ++= Seq(
   "log4j" % "log4j" % "1.2.17"
 )
 
-ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
 
 slf4jVersion := "1.7.5"
 
