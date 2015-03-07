@@ -40,9 +40,9 @@ object OneLogBuild extends Build {
           </license>
         </licenses>
         <scm>
-          <connection>scm:git:github.com:zavakid/sbt-one-log.git</connection>
-          <developerConnection>scm:git:git@github.com:zavakid/sbt-one-log.git</developerConnection>
-          <url>github.com/zavakid/sbt-one-log</url>
+          <connection>scm:git:github.com:CSUG/sbt-one-log.git</connection>
+          <developerConnection>scm:git:git@github.com:CUSG/sbt-one-log.git</developerConnection>
+          <url>github.com/CSUG/sbt-one-log</url>
         </scm>
         <developers>
           <developer>
