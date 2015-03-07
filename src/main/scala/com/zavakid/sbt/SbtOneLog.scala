@@ -105,23 +105,22 @@ object SbtOneLog extends AutoPlugin {
     }
   }
 
-
-  def task: State => State = { state =>
-    val extracted = Project.extract(state)
-    extracted.structure.allProjectRefs.foldLeft(state) { (state, p) =>
-      val ds: Seq[ModuleID] = extracted.get(libraryDependencies in p)
-      println("=====" + p + " dep : ")
-      ds.foreach(println)
-      println("===========")
-      if (p.project == "module1") {
-        val (newState, _) = extracted.runTask(update.in(p).in(Compile), state)
-        extracted.append(Seq[Setting[_]](
-          libraryDependencies in p := Seq()
-        ), newState)
-      } else state
-
-    }
-  }
+//  def task: State => State = { state =>
+//    val extracted = Project.extract(state)
+//    extracted.structure.allProjectRefs.foldLeft(state) { (state, p) =>
+//      val ds: Seq[ModuleID] = extracted.get(libraryDependencies in p)
+//      println("=====" + p + " dep : ")
+//      ds.foreach(println)
+//      println("===========")
+//      if (p.project == "module1") {
+//        val (newState, _) = extracted.runTask(update.in(p).in(Compile), state)
+//        extracted.append(Seq[Setting[_]](
+//          libraryDependencies in p := Seq()
+//        ), newState)
+//      } else state
+//
+//    }
+//  }
 
   override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
     slf4jVersion := "1.7.10"
