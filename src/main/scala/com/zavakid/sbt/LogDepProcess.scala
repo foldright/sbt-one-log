@@ -62,7 +62,9 @@ object LogDepProcess {
         case "2.11" =>
           context.copy(libraryDeps = addOrReplaceModuleId("com.typesafe.scala-logging" %% "scala-logging" % "3.1.0", context.libraryDeps))
         case "2.10" =>
-          Option(addOrReplaceModuleId("com.typesafe.scala-logging" %% "scala-logging-api" % "2.1.2", context.libraryDeps)).map {
+          Option{
+            addOrReplaceModuleId("com.typesafe.scala-logging" %% "scala-logging-api" % "2.1.2", context.libraryDeps)
+          }.map {
             addOrReplaceModuleId("com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2", _)
           }.map{ libs =>
             context.copy(libraryDeps = libs)
@@ -83,18 +85,22 @@ object LogDepProcess {
     val log4jOverSlf4j = "org.slf4j" % "log4j-over-slf4j" % version force()
 
     if(haveDependency(context, log4j) || haveDependency(context, "org.slf4j" % "slf4j-log4j12" % "-1")){
-      Option(replaceModuleId(excludeForModuleID(context.directLib, "log4j", "log4j"), context.libraryDeps)).map {
-        replaceModuleId(excludeForModuleID(context.directLib, "org.slf4j", "slf4j-log4j12"), _)
-      }.map{
-        addOrReplaceModuleId(log4j, _)
-      }.map{
-        addOrReplaceModuleId(log4jOverSlf4j, _)
-      }.map{
-        removeModuleWithDiffVersion("org.slf4j" % "slf4j-log4j12" % "-1" , _)
-      }.map{
-        removeModuleWithDiffVersion(log4j , _)
-      }.map{ libs =>
-        context.copy(libraryDeps = libs)
+      Option{
+        val replacedModuleID = excludeForModuleID(context.directLib, "log4j", "log4j")
+        val newLibraryDeps = replaceModuleId(replacedModuleID, context.libraryDeps)
+        context.copy(directLib = replacedModuleID, libraryDeps = newLibraryDeps)
+      }.map { context =>
+        val replacedModuleID = excludeForModuleID(context.directLib, "org.slf4j", "slf4j-log4j12")
+        val newLibraryDeps = replaceModuleId(replacedModuleID, context.libraryDeps)
+        context.copy(directLib = replacedModuleID, libraryDeps = newLibraryDeps)
+      }.map{ context =>
+        context.copy(libraryDeps = addOrReplaceModuleId(log4j, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = addOrReplaceModuleId(log4jOverSlf4j, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion("org.slf4j" % "slf4j-log4j12" % "-1" , context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion(log4j , context.libraryDeps))
       }.get
     }
     else context
@@ -114,24 +120,27 @@ object LogDepProcess {
     val jclOverSlf4j = "org.slf4j" % "jcl-over-slf4j" % version force()
 
     if(haveDependency(context, jcl) || haveDependency(context, jclApi) || haveDependency(context, "org.slf4j" % "slf4j-jcl" % "-1")){
-      Option(replaceModuleId(excludeForModuleID(context.directLib, "commons-logging", "commons-logging"), context.libraryDeps)).map{
-        replaceModuleId(excludeForModuleID(context.directLib, "commons-logging", "commons-logging-api"), _)
-      }.map{
-        replaceModuleId(excludeForModuleID(context.directLib, "org.slf4j", "slf4j-jcl"), _)
-      }.map{
-        addOrReplaceModuleId(jcl, _)
-      }.map{
-        addOrReplaceModuleId(jclApi, _)
-      }.map{
-        addOrReplaceModuleId(jclOverSlf4j, _)
-      }.map{
-        removeModuleWithDiffVersion(jcl , _)
-      }.map{
-        removeModuleWithDiffVersion(jclApi , _)
-      }.map{
-        removeModuleWithDiffVersion("org.slf4j" % "slf4j-jcl" % "-1" , _)
-      }.map{ libs =>
-        context.copy(libraryDeps = libs)
+      Option{
+        val replacedModuleID: ModuleID = excludeForModuleID(context.directLib, "commons-logging", "commons-logging")
+        context.copy(directLib = replacedModuleID, libraryDeps = replaceModuleId(replacedModuleID, context.libraryDeps))
+      }.map{ context =>
+        val replacedModuleID: ModuleID = excludeForModuleID(context.directLib, "commons-logging", "commons-logging-api")
+        context.copy(directLib = replacedModuleID, libraryDeps = replaceModuleId(replacedModuleID, context.libraryDeps))
+      }.map{ context =>
+        val replacedModuleID: ModuleID = excludeForModuleID(context.directLib, "org.slf4j", "slf4j-jcl")
+        context.copy(directLib = replacedModuleID, libraryDeps = replaceModuleId(replacedModuleID, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = addOrReplaceModuleId(jcl, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = addOrReplaceModuleId(jclApi, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = addOrReplaceModuleId(jclOverSlf4j, context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion(jcl , context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion(jclApi , context.libraryDeps))
+      }.map{ context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion("org.slf4j" % "slf4j-jcl" % "-1" , context.libraryDeps))
       }.get
     } else context
   }
@@ -143,10 +152,12 @@ object LogDepProcess {
     val julSlf4j = "org.slf4j" % "jul-to-slf4j" % version force()
     val newContext = context.copy(libraryDeps = addOrReplaceModuleId(julSlf4j, context.libraryDeps))
     if(haveDependency(newContext, "org.slf4j" % "slf4j-jdk14" % "-1")){
-      Option(replaceModuleId(excludeForModuleID(newContext.directLib, "org.slf4j", "slf4j-jdk14"), newContext.libraryDeps)).map{
-        removeModuleWithDiffVersion("org.slf4j" % "slf4j-jdk14" % "-1" , _)
-      }.map{ libs =>
-        newContext.copy(libraryDeps = libs)
+      Option{
+        val replacedModuleID: ModuleID = excludeForModuleID(newContext.directLib, "org.slf4j", "slf4j-jdk14")
+        val newLibraryDeps: immutable.IndexedSeq[ModuleID] = replaceModuleId(replacedModuleID, newContext.libraryDeps)
+        context.copy(directLib = replacedModuleID, libraryDeps = newLibraryDeps)
+      }.map { context =>
+        context.copy(libraryDeps = removeModuleWithDiffVersion("org.slf4j" % "slf4j-jdk14" % "-1" , context.libraryDeps))
       }.get
     } else newContext
   }
