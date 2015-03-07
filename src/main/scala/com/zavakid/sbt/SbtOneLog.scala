@@ -53,7 +53,8 @@ object SbtOneLog extends AutoPlugin {
     if (SbtOneLog.appended)
       state
     else {
-      println("sbt-one-log start process...")
+      import state.globalLogging.{full => log}
+      log.info("sbt-one-log start process...")
 
       val buildStruct = Project.structure(state)
       val extracted = Project.extract(state)
@@ -99,7 +100,7 @@ object SbtOneLog extends AutoPlugin {
       SbtOneLog.appended = true
       //extracted.append(appendedSettings, state)
       val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
-      println("sbt-one-log finished process")
+      log.info("sbt-one-log finished process")
       Project.setProject(extracted.session, newStructure, newState)
     }
   }
