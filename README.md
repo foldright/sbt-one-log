@@ -12,15 +12,15 @@ sbt-one-log plugin provides you a easy way to manage the log dependency ( avoid 
 [sbt-one-log release notes](https://github.com/CSUG/sbt-one-log/tree/master/notes)
 
 ## usage 
+for sbt 0.13.5 or above, if you use sbt under 0.13.5, please use : [0.1.3](https://github.com/CSUG/sbt-one-log/tree/branch-0.1.3)
+
 Add `sbt-one-log` plugin to the sbt configuration:
 
 ### add plugin in project/plugins.sbt
 ```scala
 addSbtPlugin("com.zavakid.sbt" % "sbt-one-log" % "1.0.0")
 ```
-for sbt under 0.13.5, using [0.1.3](https://github.com/CSUG/sbt-one-log/tree/branch-0.1.3)
 ### using build.sbt
-**important: oneLogSettings must position after `libraryDependencies`**
 
 ```scala
 // oneLogSettings will add libDependencies and resolvers
