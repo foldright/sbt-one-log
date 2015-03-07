@@ -1,6 +1,7 @@
 import sbt._
 import sbt.Keys._
 import com.zavakid.sbt._
+import SbtOneLogKeys._
 
 object Build extends sbt.Build {
 
@@ -33,7 +34,8 @@ object Build extends sbt.Build {
         "org.mybatis" % "mybatis" % "3.2.7" //dependent slf4j-log4j12
         ,"commons-beanutils" % "commons-beanutils" % "1.9.1" //dependent commons-logging
         ,"com.alibaba.otter" % "node.deployer" % "4.2.11"
-      )
+      ),
+      slf4jVersion := "1.7.7"
     )
   ).enablePlugins(SbtOneLog)
 

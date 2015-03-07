@@ -1,6 +1,7 @@
 import sbt._
 import sbt.Keys._
 import com.zavakid.sbt._
+import SbtOneLogKeys._
 
 object Build extends sbt.Build {
 
@@ -47,7 +48,8 @@ object Build extends sbt.Build {
     settings = commonSettings ++ Seq(
       libraryDependencies := libraryDependencies.value ++ Seq(
         "log4j" % "log4j" % "1.2.17" 
-      )
+      ),
+      slf4jVersion := "1.7.7"
     )
   ).enablePlugins(SbtOneLog)
 }
