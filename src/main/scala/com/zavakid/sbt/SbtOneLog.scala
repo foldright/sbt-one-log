@@ -197,8 +197,14 @@ object SbtOneLog extends AutoPlugin {
     }
   }
 
+  // This is to support 0.13.8's InlineConfigurationWithExcludes while not forcing 0.13.8
+  // taken from: https://github.com/jrudolph/sbt-dependency-graph/pull/68/files
+  type HasModule = {
+    val module: ModuleID
+  }
   def crossName(ivyModule: IvySbt#Module) = ivyModule.moduleSettings match {
     case ic: InlineConfiguration => ic.module.name
+    case hm: HasModule if hm.getClass.getName == "sbt.InlineConfigurationWithExcludes" => hm.module.name
     case _ =>
       throw new IllegalStateException("sbtOneLog plugin currently only supports InlineConfiguration of ivy settings (the default in sbt, from sbt-dependency-graph)")
   }
