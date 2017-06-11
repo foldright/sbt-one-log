@@ -39,7 +39,7 @@ import import com.zavakid.sbt._
 object Build extends sbt.Build {
 
   // add oneLogSettings to your settings
-  lazt val root = Project(
+  lazy val root = Project(
     id = "example",
     base = file(.),
   ).enablePlugins(SbtOneLog)
