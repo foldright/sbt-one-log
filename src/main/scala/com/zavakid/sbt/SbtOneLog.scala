@@ -15,11 +15,9 @@ object SbtOneLogKeys {
 
   val slf4jVersion = settingKey[String]("which slf4j version to use")
   val logbackVersion = settingKey[String]("which logback version to use")
-  //val scalaLoggingVersion = settingKey[String]("which scalaLogging version to use")
   val useScalaLogging = settingKey[Boolean]("add the scalaLogging(https://github.com/typesafehub/scala-logging)")
   val logbackXMLTemplate = settingKey[String]("the logback template path")
   val logbackFileName = settingKey[String]("the logback file name")
-  //val logbackTestXMLTemplate = settingKey[String]("the logback-test template path")
   val withLogDependencies = settingKey[Seq[sbt.ModuleID]]("with log dependencies")
   val generateLogbackXML = TaskKey[Unit]("generate-logback-xml", "generate logback.xml and logback-test.xml in test if they are not exist")
 
@@ -44,8 +42,6 @@ object SbtOneLog extends AutoPlugin {
 
   override def globalSettings: Seq[Def.Setting[_]] = {
     onLoad := onLoad.value andThen doTask
-    //      onLoad := onLoad.value andThen task
-
   }
 
   var appended = false
@@ -105,23 +101,6 @@ object SbtOneLog extends AutoPlugin {
     }
   }
 
-//  def task: State => State = { state =>
-//    val extracted = Project.extract(state)
-//    extracted.structure.allProjectRefs.foldLeft(state) { (state, p) =>
-//      val ds: Seq[ModuleID] = extracted.get(libraryDependencies in p)
-//      println("=====" + p + " dep : ")
-//      ds.foreach(println)
-//      println("===========")
-//      if (p.project == "module1") {
-//        val (newState, _) = extracted.runTask(update.in(p).in(Compile), state)
-//        extracted.append(Seq[Setting[_]](
-//          libraryDependencies in p := Seq()
-//        ), newState)
-//      } else state
-//
-//    }
-//  }
-
   override def projectSettings: Seq[Setting[_]] = Seq[Setting[_]](
     slf4jVersion := "1.7.10"
     , logbackVersion := "1.1.2"
@@ -154,7 +133,6 @@ object SbtOneLog extends AutoPlugin {
       out.log.info(s"generate $file")
       IO.write(file, content)
     }
-    //val force = generateLogbackXMLParser.parsed
     val force = false
     val resourceDir = resourceDirectory.value
     val logbackXML = resourceDir / logbackFileName.value
