@@ -1,19 +1,17 @@
-package com.zavakid.sbt
-
-/**
- *
+/*
  * copy from https://github.com/jrudolph/sbt-dependency-graph/blob/master/src/main/scala/net/virtualvoid/sbt/graph/IvyGraphMLDependencies.scala
- * and delete some unneed function
+ * and delete some unneeded function
  */
+package com.zavakid.sbt
 
 
 import sbinary.{DefaultProtocol, Format}
-import sbt.ConsoleLogger
 
 import scala.collection.mutable
 import scala.collection.mutable.{Set => MSet}
 import scala.xml.parsing.ConstructingParser
 import scala.xml.{Document, Node, NodeSeq}
+
 
 object IvyGraphMLDependencies extends App {
 
@@ -130,7 +128,8 @@ object IvyGraphMLDependencies extends App {
   def moduleIdFromElement(element: Node, version: String): ModuleId =
     ModuleId(element.attribute("organisation").get.text, element.attribute("name").get.text, version)
 
-  private def buildDoc(ivyReportFile: String) = ConstructingParser.fromSource(io.Source.fromFile(ivyReportFile), preserveWS = false).document()
+  private def buildDoc(ivyReportFile: String) =
+    ConstructingParser.fromSource(io.Source.fromFile(ivyReportFile), preserveWS = false).document()
 }
 
 object ModuleGraphProtocol extends DefaultProtocol {

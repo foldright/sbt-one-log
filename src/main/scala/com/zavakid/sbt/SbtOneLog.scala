@@ -8,7 +8,6 @@ import sbt.Keys._
 import sbt._
 
 /**
- *
  * @author zavakid 2014-11-10
  */
 object SbtOneLogKeys {
@@ -94,7 +93,6 @@ object SbtOneLog extends AutoPlugin {
       }
 
       SbtOneLog.appended = true
-      //extracted.append(appendedSettings, state)
       val newStructure = Load.reapply(transformed, extracted.structure)(extracted.showKey)
       log.info("sbt-one-log finished process")
       Project.setProject(extracted.session, newStructure, newState)
@@ -106,7 +104,6 @@ object SbtOneLog extends AutoPlugin {
     , logbackVersion := "1.1.2"
     , useScalaLogging := true
     , resolvers += "99-empty" at "http://version99.qos.ch/"
-    //, libraryDependencies ++= logs.value
     , computeIvReportFunction := computeIvReportFunctionImpl.value
     , computeIvyReport <<= computeIvReportFunction map (_(Compile.toString())) dependsOn (update in Compile)
     , computeModuleGraph <<= computeIvyReport map (absoluteReportPath andThen IvyGraphMLDependencies.graph)
@@ -166,7 +163,7 @@ object SbtOneLog extends AutoPlugin {
     }
   }
 
-  val VersionPattern = """(\d+)\.(\d+)\.(\d+)(?:-(.*))?""".r
+  private val VersionPattern = """(\d+)\.(\d+)\.(\d+)(?:-(.*))?""".r
 
   object Version {
     def unapply(str: String): Option[(Int, Int, Int, Option[String])] = str match {
