@@ -1,4 +1,10 @@
-# `sbt-one-log` plugin [![Build Status](https://travis-ci.org/CSUG/sbt-one-log.svg?branch=master)](https://travis-ci.org/CSUG/sbt-one-log)
+# `sbt-one-log` plugin 
+
+[![Build Status](https://img.shields.io/travis/CSUG/sbt-one-log/master?logo=travis-ci&logoColor=white)](https://travis-ci.org/CSUG/sbt-one-log)
+[![GitHub release](https://img.shields.io/github/release/foldright/sbt-one-log)](https://github.com/foldright/sbt-one-log/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/foldright/sbt-one-log)](https://github.com/foldright/sbt-one-log/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/foldright/sbt-one-log)](https://github.com/foldright/sbt-one-log/fork)
+[![License](https://img.shields.io/github/license/foldright/sbt-one-log?color=4D7A97)](LICENSE.txt)
 
 `sbt-one-log` is a sbt plugin make logging dependency easy.
 
